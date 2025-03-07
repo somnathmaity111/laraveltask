@@ -118,11 +118,6 @@ php artisan optimize
 php artisan serve
 ```
 
-## Future Enhancements
-✅ Secure API with authentication (Laravel Sanctum or JWT).  
-✅ Implement soft delete for users.  
-✅ Add Redis caching for optimized API performance.  
-✅ Track API request logs for analytics.
 
 ## License
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
