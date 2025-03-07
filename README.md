@@ -53,7 +53,7 @@ php artisan migrate
 ```
 
 ## Scheduled Task (User Fetching)
-A scheduled task fetches **5 users every 5 minutes** from `https://randomuser.me/api` and stores them in the database.
+A scheduled task fetches **5 users every 5 minutes** from `your_api_link` and stores them in the database.
 
 Run the scheduler manually:
 ```sh
