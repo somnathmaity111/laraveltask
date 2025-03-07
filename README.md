@@ -7,60 +7,123 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+# User Management API & Scheduled Fetcher
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## About This Project
+This Laravel 10 project:
+- Fetches random users from an external API every 5 minutes.
+- Stores users in a relational database.
+- Provides a REST API with filtering, field selection, and pagination.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Project Setup
+### Prerequisites
+Ensure the following are installed on your system:
+- PHP 8.1+
+- Composer
+- Laravel 10
+- MySQL (or any preferred database)
+- cURL (for HTTP requests)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Installation
+Run the following commands to set up the project:
+```sh
+git clone <repository-url>
+cd project-folder
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-## Learning Laravel
+### Configure Environment
+Edit the `.env` file and update the database settings:
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+GET_USERS_API_LINK=your_api_link
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Run migrations to create database tables:
+```sh
+php artisan migrate
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Scheduled Task (User Fetching)
+A scheduled task fetches **5 users every 5 minutes** from `https://randomuser.me/api` and stores them in the database.
 
-## Laravel Sponsors
+Run the scheduler manually:
+```sh
+php artisan schedule:work
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+To automate, add this to the **cron job** (Linux/macOS):
+```sh
+* * * * * php /path-to-your-project/artisan schedule:run >> /dev/null 2>&1
+```
 
-### Premium Partners
+## API Endpoints
+### Get Users
+#### Endpoint:
+```sh
+GET /api/users
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+#### Query Parameters:
 
-## Contributing
+| Parameter  | Type    | Description |
+|------------|--------|-------------|
+| `gender`   | string | Filter by gender (`male`, `female`). |
+| `city`     | string | Filter by city. |
+| `country`  | string | Filter by country. |
+| `fields`   | string | Specify fields (`name,email,gender,city,country`). |
+| `paginate` | boolean | Enable/disable pagination. Default: `true`. |
+| `per_page` | integer | Number of records per page (only if `paginate=true`). |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+#### Examples:
+✔ Get all users (paginated by default):
+```
+GET http://127.0.0.1:8000/api/users
+```
 
-## Code of Conduct
+✔ Get only `name` and `email`:
+```
+GET http://127.0.0.1:8000/api/users?fields=name,email
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+✔ Filter by gender:
+```
+GET http://127.0.0.1:8000/api/users?gender=male
+```
 
-## Security Vulnerabilities
+✔ Disable pagination:
+```
+GET http://127.0.0.1:8000/api/users?paginate=false
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Testing
+### Clear Cache Before Testing
+```sh
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan optimize
+```
+
+### Run Laravel Server
+```sh
+php artisan serve
+```
+
+## Future Enhancements
+✅ Secure API with authentication (Laravel Sanctum or JWT).  
+✅ Implement soft delete for users.  
+✅ Add Redis caching for optimized API performance.  
+✅ Track API request logs for analytics.
 
 ## License
-
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
